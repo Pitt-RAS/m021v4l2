@@ -788,7 +788,7 @@ static void color_correct(uint8_t * bgr, int width, int height, int8_t bcorrect,
 
 // =============================================================================================
 
-int m021_init(int id, m021_t * vd, int width, int height)
+int m021_init(const char * device_name, m021_t * vd, int width, int height)
 {
     int ret = VDIN_OK;
 
@@ -818,10 +818,7 @@ int m021_init(int id, m021_t * vd, int width, int height)
         vd->udev_fd = udev_monitor_get_fd(vd->udev_mon);
     }
 
-    char devname[20];
-    sprintf(devname, "/dev/video%d", id);
-
-    if ((vd->fd = v4l2_open(devname, O_RDWR | O_NONBLOCK, 0)) < 0)
+    if ((vd->fd = v4l2_open(device_name, O_RDWR | O_NONBLOCK, 0)) < 0)
     {
         perror("ERROR opening V4L interface");
         ret = VDIN_DEVICE_ERR;
@@ -835,7 +832,7 @@ int m021_init(int id, m021_t * vd, int width, int height)
 	// populate video capabilities structure array
 	// should only be called after all m021 struct elements
 	// have been initialized
-	if((ret = check_videoIn(devname, vd)) != VDIN_OK)
+	if((ret = check_videoIn(device_name, vd)) != VDIN_OK)
 	{
 		clear_v4l2(vd);
 		return ret;

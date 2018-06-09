@@ -34,7 +34,8 @@ static PyObject * init (PyObject * dummy, PyObject * args)
     PyObject * obj = NULL;
     int bcorrect, gcorrect, rcorrect;
 
-    if (!PyArg_ParseTuple(args, "O!iii", &PyArray_Type, &obj, &bcorrect, &gcorrect, &rcorrect))
+    const char * device_name;
+    if (!PyArg_ParseTuple(args, "sO!iii", &device_name, &PyArray_Type, &obj, &bcorrect, &gcorrect, &rcorrect))
         return NULL;
 
     PyArrayObject * nparray = (PyArrayObject*)PyArray_FROM_OTF(obj, NPY_UINT8, NPY_INOUT_ARRAY);
@@ -48,7 +49,7 @@ static PyObject * init (PyObject * dummy, PyObject * args)
     int cols = nparray->dimensions[1];
 
     m021_thread_start(&thread_data, rows, cols, (uint8_t*)PyArray_GETPTR3(nparray, 0, 0, 0), 
-            bcorrect, gcorrect, rcorrect);
+            bcorrect, gcorrect, rcorrect, device_name);
 
     Py_DECREF(nparray);
 

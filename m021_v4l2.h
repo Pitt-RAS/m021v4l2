@@ -87,7 +87,7 @@ typedef struct m021 {
   * This routine should be called on its own thread, separate from the thread on which the
   * grab routines are called.
   */
-int m021_init(int id, m021_t * m021, int width, int height);
+int m021_init(const char * device_name, m021_t * m021, int width, int height);
 
 /**
   * Grabs a YUYV image from the M021 camera.
