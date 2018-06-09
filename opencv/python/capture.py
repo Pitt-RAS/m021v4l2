@@ -24,7 +24,7 @@ import cv2
 from m021v4l2 import Capture800x460
 from time import time
 
-cap = Capture800x460()
+cap = Capture800x460('/dev/v4l/by-id/usb-Leopard_Imaging_MT9M021C_0000000003-video-index0')
 
 start = time()
 
