@@ -21,10 +21,10 @@ along with M021_V4L2.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
 import cv2
-from m021v4l2 import Capture800x460
+from m021v4l2 import Capture800x460, Capture1600x1200, Capture1280x720
 from time import time
 
-cap = Capture800x460('/dev/v4l/by-id/usb-Leopard_Imaging_MT9M021C_0000000003-video-index0')
+cap = Capture1280x720('/dev/v4l/by-id/usb-Leopard_Imaging_MT9M021C_0000000003-video-index0')
 
 start = time()
 
