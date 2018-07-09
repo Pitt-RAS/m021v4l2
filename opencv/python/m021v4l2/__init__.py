@@ -32,8 +32,9 @@ class _Capture(object):
     def __init__(self, device_name, rows, cols, bcorrect, gcorrect, rcorrect):
 
         self.frame = np.zeros((rows,cols,3), dtype='uint8')
+        self.exit_code = np.array([-1], dtype='int32')
 
-        lib.init(device_name, self.frame, bcorrect, gcorrect, rcorrect)
+        lib.init(device_name, self.frame, self.exit_code, bcorrect, gcorrect, rcorrect)
 
     def read(self):
         '''
@@ -43,7 +44,7 @@ class _Capture(object):
 
         lib.acquire(self.frame)
 
-        return True, self.frame
+        return self.exit_code[0] == 0, self.frame
 
     def getCount(self):
         '''

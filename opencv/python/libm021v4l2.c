@@ -32,10 +32,18 @@ static m021_thread_data_t thread_data;
 static PyObject * init (PyObject * dummy, PyObject * args)
 {
     PyObject * obj = NULL;
+    PyObject * status_obj = NULL;
     int bcorrect, gcorrect, rcorrect;
 
     const char * device_name;
-    if (!PyArg_ParseTuple(args, "sO!iii", &device_name, &PyArray_Type, &obj, &bcorrect, &gcorrect, &rcorrect))
+    if (!PyArg_ParseTuple(args,
+                          "sO!O!iii",
+                          &device_name,
+                          &PyArray_Type, &obj,
+                          &PyArray_Type, &status_obj,
+                          &bcorrect,
+                          &gcorrect,
+                          &rcorrect))
         return NULL;
 
     PyArrayObject * nparray = (PyArrayObject*)PyArray_FROM_OTF(obj, NPY_UINT8, NPY_INOUT_ARRAY);
@@ -45,14 +53,29 @@ static PyObject * init (PyObject * dummy, PyObject * args)
         return NULL;
     }
 
+    PyArrayObject * status_array = (PyArrayObject*)PyArray_FROM_OTF(status_obj, NPY_INT32, NPY_INOUT_ARRAY);
+
+    if (status_array == NULL) {
+        Py_DECREF(nparray);
+        PyArray_XDECREF_ERR(status_array);
+        return NULL;
+    }
+
     int rows = nparray->dimensions[0];
     int cols = nparray->dimensions[1];
 
-    m021_thread_start(&thread_data, rows, cols, (uint8_t*)PyArray_GETPTR3(nparray, 0, 0, 0), 
-            bcorrect, gcorrect, rcorrect, device_name);
+    m021_thread_start(&thread_data,
+                      rows,
+                      cols,
+                      (uint8_t*)PyArray_GETPTR3(nparray, 0, 0, 0),
+                      (int32_t*)PyArray_GETPTR1(status_array, 0),
+                      bcorrect,
+                      gcorrect,
+                      rcorrect,
+                      device_name);
 
     Py_DECREF(nparray);
-
+    Py_DECREF(status_array);
 
     Py_INCREF(Py_None);
     return Py_None;
@@ -60,7 +83,7 @@ static PyObject * init (PyObject * dummy, PyObject * args)
 
 static PyObject * acquire (PyObject * dummy, PyObject * args)
 {
-   Py_INCREF(Py_None);
+    Py_INCREF(Py_None);
     return Py_None;
 }
 

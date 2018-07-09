@@ -30,15 +30,20 @@ static void * loop(void * arg)
     pthread_mutex_t lock = data->lock;
 
     m021_t cap;
-    m021_init(data->device_name, &cap, data->cols, data->rows);
+    *data->status = m021_init(
+            data->device_name, &cap, data->cols, data->rows);
 
     data->count = 0;
 
-    while (true) {
+    while (*data->status == 0) {
 
         pthread_mutex_lock(&lock);
 
-        m021_grab_bgr(&cap, data->bytes, data->bcorrect, data->gcorrect, data->rcorrect);
+        *data->status = m021_grab_bgr(&cap,
+                                      data->bytes,
+                                      data->bcorrect,
+                                      data->gcorrect,
+                                      data->rcorrect);
 
         pthread_mutex_unlock(&lock);
 
@@ -50,8 +55,15 @@ static void * loop(void * arg)
     return (void *)0;
 }
 
-void m021_thread_start(m021_thread_data_t * data, int rows, int cols, uint8_t * bytes, 
-        int bcorrect, int gcorrect, int rcorrect, const char * device_name)
+void m021_thread_start(m021_thread_data_t * data,
+                       int rows,
+                       int cols,
+                       uint8_t * bytes,
+                       int32_t * status,
+                       int bcorrect,
+                       int gcorrect,
+                       int rcorrect,
+                       const char * device_name)
 {
     pthread_mutex_t lock;
 
@@ -63,6 +75,7 @@ void m021_thread_start(m021_thread_data_t * data, int rows, int cols, uint8_t * 
     data->rows = rows;
     data->cols = cols;
     data->bytes = bytes;
+    data->status = status;
     data->lock = lock;
     data->bcorrect = bcorrect;
     data->gcorrect = gcorrect;
