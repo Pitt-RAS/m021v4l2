@@ -888,4 +888,5 @@ void m021_free(m021_t * vd)
     free(vd->framebuffer);
     free(vd->tmpbuffer);
     free(vd->tmpbuffer1);
+    clear_v4l2(vd);
 }

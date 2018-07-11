@@ -35,7 +35,7 @@ static void * loop(void * arg)
 
     data->count = 0;
 
-    while (*data->status == 0) {
+    while (*data->status == 0 && data->stop == 0) {
 
         pthread_mutex_lock(&lock);
 
@@ -50,7 +50,9 @@ static void * loop(void * arg)
         data->count++;
     }
 
+    fprintf(stderr, "FREEING CAMERA\n");
     m021_free(&cap);
+    fprintf(stderr, "CAMERA FREED\n");
 
     return (void *)0;
 }
@@ -81,7 +83,15 @@ void m021_thread_start(m021_thread_data_t * data,
     data->gcorrect = gcorrect;
     data->rcorrect = rcorrect;
     data->device_name = device_name;
+    data->stop = 0;
 
     if (pthread_create(&data->video_thread, NULL, loop, data)) 
         printf("\nFailed to create thread\n");
+}
+
+void m021_thread_stop(m021_thread_data_t * data)
+{
+    pthread_mutex_lock(&data->lock);
+    data->stop = 1;
+    pthread_mutex_unlock(&data->lock);
 }

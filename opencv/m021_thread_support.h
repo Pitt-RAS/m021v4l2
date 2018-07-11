@@ -27,6 +27,7 @@ typedef struct {
     int cols;
     uint8_t * bytes;
     int32_t * status;
+    uint8_t stop;
     pthread_t video_thread;
     pthread_mutex_t lock;
     unsigned long long count;
@@ -46,3 +47,5 @@ void m021_thread_start(m021_thread_data_t * data,
                        int gcorrect,
                        int rcorrect,
                        const char * device_name);
+
+void m021_thread_stop(m021_thread_data_t * data);

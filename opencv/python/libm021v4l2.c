@@ -93,6 +93,11 @@ count(PyObject *self, PyObject *args)
     return Py_BuildValue("i", thread_data.count);
 }
 
+static PyObject *
+release(PyObject *self, PyObject *args)
+{
+}
+
 static struct PyMethodDef methods[] = {
     {"init", init, METH_VARARGS, NULL},
     {"acquire", acquire, METH_VARARGS, NULL},
